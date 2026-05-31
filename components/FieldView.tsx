@@ -18,26 +18,30 @@ interface FieldViewProps {
 // Positions pré-définies sur le terrain (en pourcentage)
 const FORMATIONS = {
   "4-4-2": [
-    { row: 90, cols: [50] }, // GK
-    { row: 70, cols: [15, 35, 65, 85] }, // Défense
+    { row: 85, cols: [50] }, // GK
+    { row: 65, cols: [15, 35, 65, 85] }, // Défense
     { row: 45, cols: [20, 40, 60, 80] }, // Milieu
-    { row: 15, cols: [35, 65] }, // Attaque
+    { row: 20, cols: [35, 65] }, // Attaque
   ],
   "4-3-3": [
-    { row: 90, cols: [50] }, // GK
-    { row: 70, cols: [15, 35, 65, 85] }, // Défense
+    { row: 85, cols: [50] }, // GK
+    { row: 65, cols: [15, 35, 65, 85] }, // Défense
     { row: 45, cols: [30, 50, 70] }, // Milieu
-    { row: 15, cols: [25, 50, 75] }, // Attaque
+    { row: 20, cols: [25, 50, 75] }, // Attaque
   ],
   "3-5-2": [
-    { row: 90, cols: [50] }, // GK
-    { row: 70, cols: [25, 50, 75] }, // Défense
+    { row: 85, cols: [50] }, // GK
+    { row: 65, cols: [25, 50, 75] }, // Défense
     { row: 45, cols: [15, 35, 50, 65, 85] }, // Milieu
-    { row: 15, cols: [35, 65] }, // Attaque
+    { row: 20, cols: [35, 65] }, // Attaque
   ],
 }
 
 export default function FieldView({ teamName, players }: FieldViewProps) {
+  if (!players || players.length === 0) {
+    return <div className="text-center text-slate-400 py-8">Pas de joueurs disponibles</div>
+  }
+
   const playersByPosition = {
     GK: players.filter((p) => p.position === "GK"),
     DEF: players.filter((p) => p.position === "DEF"),
@@ -58,14 +62,16 @@ export default function FieldView({ teamName, players }: FieldViewProps) {
   let playerIndex = 0
   const playerPositions: Array<{ player: Player; x: number; y: number }> = []
 
+  // Placer les joueurs sur le terrain
+  const allPlayers = [
+    ...playersByPosition.GK,
+    ...playersByPosition.DEF,
+    ...playersByPosition.MID,
+    ...playersByPosition.FWD,
+  ]
+
   positions.forEach((row) => {
     row.cols.forEach((col) => {
-      const allPlayers = [
-        ...playersByPosition.GK,
-        ...playersByPosition.DEF,
-        ...playersByPosition.MID,
-        ...playersByPosition.FWD,
-      ]
       if (playerIndex < allPlayers.length) {
         playerPositions.push({
           player: allPlayers[playerIndex],
@@ -78,91 +84,84 @@ export default function FieldView({ teamName, players }: FieldViewProps) {
   })
 
   return (
-    <div className="w-full bg-gradient-to-b from-slate-800 to-slate-900 rounded-xl p-6 space-y-6">
-      <h3 className="text-lg font-bold text-white text-center">{teamName} - Formation {formation}</h3>
+    <div className="w-full bg-gradient-to-b from-slate-800 to-slate-900 rounded-xl p-4 space-y-4">
+      <h3 className="text-base font-bold text-white text-center">{teamName}</h3>
+      <p className="text-xs text-slate-400 text-center">Formation {formation}</p>
 
       {/* Terrain */}
       <div className="relative bg-gradient-to-b from-emerald-700 to-emerald-800 aspect-[2/3] rounded-lg border-4 border-white shadow-2xl overflow-hidden">
         {/* Lignes du terrain */}
-        <svg className="absolute inset-0 w-full h-full pointer-events-none">
+        <svg className="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg">
           {/* Ligne médiane */}
-          <line x1="50%" y1="0" x2="50%" y2="100%" stroke="white" strokeWidth="2" opacity="0.3" />
+          <line x1="50%" y1="0" x2="50%" y2="100%" stroke="white" strokeWidth="2" opacity="0.4" />
           {/* Cercle du centre */}
-          <circle cx="50%" cy="50%" r="15%" stroke="white" strokeWidth="2" fill="none" opacity="0.3" />
+          <circle cx="50%" cy="50%" r="12%" stroke="white" strokeWidth="1.5" fill="none" opacity="0.3" />
           {/* Zones de but */}
-          <rect x="30%" y="2%" width="40%" height="15%" stroke="white" strokeWidth="2" fill="none" opacity="0.3" />
-          <rect x="30%" y="83%" width="40%" height="15%" stroke="white" strokeWidth="2" fill="none" opacity="0.3" />
+          <rect x="30%" y="3%" width="40%" height="12%" stroke="white" strokeWidth="1.5" fill="none" opacity="0.3" />
+          <rect x="30%" y="85%" width="40%" height="12%" stroke="white" strokeWidth="1.5" fill="none" opacity="0.3" />
+          {/* Petites zones */}
+          <rect x="35%" y="5%" width="30%" height="7%" stroke="white" strokeWidth="1.5" fill="none" opacity="0.3" />
+          <rect x="35%" y="88%" width="30%" height="7%" stroke="white" strokeWidth="1.5" fill="none" opacity="0.3" />
         </svg>
 
         {/* Joueurs */}
         {playerPositions.map((item, idx) => (
           <div
-            key={idx}
-            className="absolute flex flex-col items-center gap-1 -translate-x-1/2 -translate-y-1/2"
-            style={{ left: `${item.x}%`, top: `${item.y}%` }}
+            key={`${item.player.id}-${idx}`}
+            className="absolute flex flex-col items-center -translate-x-1/2 -translate-y-1/2"
+            style={{ left: `${item.x}%`, top: `${item.y}%`, zIndex: 10 + idx }}
           >
-            {/* Jersey */}
-            <div className="relative w-10 h-10 rounded-full bg-blue-600 border-2 border-white shadow-lg flex items-center justify-center">
-              {item.player.crest ? (
-                <Image
-                  src={item.player.crest}
-                  alt={item.player.name}
-                  fill
-                  className="rounded-full object-cover"
-                  unoptimized
-                />
-              ) : (
-                <span className="text-white font-bold text-xs">{item.player.shirt}</span>
-              )}
+            {/* Jersey avec numéro */}
+            <div className="relative w-12 h-12 rounded-full bg-gradient-to-b from-blue-500 to-blue-600 border-2 border-white shadow-lg flex items-center justify-center text-white font-bold text-sm">
+              {item.player.shirt}
             </div>
-            {/* Infos */}
-            <div className="text-center">
-              <p className="text-xs font-bold text-white bg-black/50 px-2 py-0.5 rounded whitespace-nowrap">
-                {item.player.shirt}
+            {/* Nom court */}
+            <div className="mt-1 text-center">
+              <p className="text-xs font-bold text-white bg-black/60 px-2 py-0.5 rounded whitespace-nowrap">
+                {item.player.name.split(" ").pop()}
               </p>
-              <p className="text-xs text-slate-300 truncate max-w-[60px]">{item.player.name}</p>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Legende */}
-      <div className="grid grid-cols-2 gap-3 text-xs">
+      {/* Légende */}
+      <div className="grid grid-cols-2 gap-2 text-xs bg-slate-700/50 rounded-lg p-3">
         <div>
-          <p className="text-slate-400 font-semibold mb-2">Défense ({defCount})</p>
-          <div className="space-y-1">
+          <p className="text-slate-300 font-bold mb-1">Défense ({defCount})</p>
+          <div className="space-y-0.5 text-slate-300 text-xs">
             {playersByPosition.DEF.slice(0, 4).map((p) => (
-              <p key={p.id} className="text-slate-300">
+              <p key={p.id} className="truncate">
                 #{p.shirt} {p.name}
               </p>
             ))}
           </div>
         </div>
         <div>
-          <p className="text-slate-400 font-semibold mb-2">Milieu ({midCount})</p>
-          <div className="space-y-1">
-            {playersByPosition.MID.slice(0, 4).map((p) => (
-              <p key={p.id} className="text-slate-300">
+          <p className="text-slate-300 font-bold mb-1">Milieu ({midCount})</p>
+          <div className="space-y-0.5 text-slate-300 text-xs">
+            {playersByPosition.MID.slice(0, 5).map((p) => (
+              <p key={p.id} className="truncate">
                 #{p.shirt} {p.name}
               </p>
             ))}
           </div>
         </div>
         <div>
-          <p className="text-slate-400 font-semibold mb-2">Attaque ({fwdCount})</p>
-          <div className="space-y-1">
-            {playersByPosition.FWD.slice(0, 2).map((p) => (
-              <p key={p.id} className="text-slate-300">
+          <p className="text-slate-300 font-bold mb-1">Attaque ({fwdCount})</p>
+          <div className="space-y-0.5 text-slate-300 text-xs">
+            {playersByPosition.FWD.slice(0, 3).map((p) => (
+              <p key={p.id} className="truncate">
                 #{p.shirt} {p.name}
               </p>
             ))}
           </div>
         </div>
         <div>
-          <p className="text-slate-400 font-semibold mb-2">Gardien</p>
-          <div className="space-y-1">
+          <p className="text-slate-300 font-bold mb-1">Gardien</p>
+          <div className="space-y-0.5 text-slate-300 text-xs">
             {playersByPosition.GK.map((p) => (
-              <p key={p.id} className="text-slate-300">
+              <p key={p.id} className="truncate">
                 #{p.shirt} {p.name}
               </p>
             ))}

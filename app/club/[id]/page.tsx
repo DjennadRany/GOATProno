@@ -60,7 +60,6 @@ export default function ClubPage({ params }: { params: Promise<{ id: string }> }
                   name: p.name,
                   position: p.position === "Goalkeeper" ? "GK" : p.position === "Defence" ? "DEF" : p.position === "Midfield" ? "MID" : "FWD",
                   shirt: p.shirtNumber || 0,
-                  crest: p.countryFlag,
                 }))}
               />
             )}
