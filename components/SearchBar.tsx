@@ -131,7 +131,12 @@ export default function SearchBar() {
             {!searching && results.map((team) => {
               const fav = getFavState(team.id)
               return (
-                <div key={`${team.id}-${team.competitionCode}`} className="flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-slate-700 transition-colors">
+                <Link
+                  key={`${team.id}-${team.competitionCode}`}
+                  href={`/club/${team.id}`}
+                  onClick={() => { setFocused(false); setQuery("") }}
+                  className="flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-slate-700 transition-colors"
+                >
                   {team.crest ? (
                     <div className="relative w-7 h-7 shrink-0">
                       <Image src={team.crest} alt={team.name} fill className="object-contain" unoptimized />
@@ -143,15 +148,16 @@ export default function SearchBar() {
                     <p className="text-sm font-medium text-white truncate">{team.name}</p>
                     <p className="text-xs text-slate-400 truncate">{team.competitionName}</p>
                   </div>
-                  <div className="flex items-center gap-3 shrink-0">
-                    <button onClick={() => handleToggle(team)} className={`transition-colors ${fav ? "text-yellow-400" : "text-slate-500 hover:text-yellow-400"}`}>
-                      <Star size={15} fill={fav ? "currentColor" : "none"} />
-                    </button>
-                    <Link href={`/competition/${team.competitionCode}`} onClick={() => { setFocused(false); setQuery("") }} className="text-teal-400 hover:text-teal-300">
-                      <ArrowRight size={15} />
-                    </Link>
-                  </div>
-                </div>
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault()
+                      handleToggle(team)
+                    }}
+                    className={`transition-colors ${fav ? "text-yellow-400" : "text-slate-500 hover:text-yellow-400"}`}
+                  >
+                    <Star size={15} fill={fav ? "currentColor" : "none"} />
+                  </button>
+                </Link>
               )
             })}
           </div>

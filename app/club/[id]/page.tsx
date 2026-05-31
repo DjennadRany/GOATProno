@@ -7,6 +7,7 @@ import ClubHero from "@/components/ClubHero"
 import PlayerCard from "@/components/PlayerCard"
 import LoadingState from "@/components/LoadingState"
 import ErrorState from "@/components/ErrorState"
+import FieldView from "@/components/FieldView"
 
 const POSITION_GROUPS = [
   { key: "Goalkeeper", label: "Gardiens" },
@@ -50,6 +51,20 @@ export default function ClubPage({ params }: { params: Promise<{ id: string }> }
         <>
           <ClubHero club={club} />
           <main className="max-w-2xl mx-auto px-4 py-6 space-y-6">
+            {/* Terrain avec composition */}
+            {club.squad && club.squad.length > 0 && (
+              <FieldView
+                teamName={club.name}
+                players={club.squad.map((p: SquadPlayer) => ({
+                  id: p.id,
+                  name: p.name,
+                  position: p.position === "Goalkeeper" ? "GK" : p.position === "Defence" ? "DEF" : p.position === "Midfield" ? "MID" : "FWD",
+                  shirt: p.shirtNumber || 0,
+                  crest: p.countryFlag,
+                }))}
+              />
+            )}
+
             {POSITION_GROUPS.map(({ key, label }) => {
               const players = club.squad.filter((p: SquadPlayer) => p.position === key)
               if (players.length === 0) return null
