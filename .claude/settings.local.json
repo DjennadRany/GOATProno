@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(npx tsc *)",
+      "Bash(npx vitest *)",
+      "Bash(node_modules/.bin/tsc --noEmit)",
+      "Bash(curl -s \"https://api.football-data.org/v4/competitions\" -H \"X-Auth-Token: 5cc19077ec104b66ac12d26d946b8b61\")",
+      "Bash(node -e \"const d=require\\('fs'\\).readFileSync\\('/dev/stdin','utf8'\\); const j=JSON.parse\\(d\\); j.competitions.forEach\\(c=>console.log\\(c.code, c.name, c.plan\\)\\)\")",
+      "Bash(git add *)",
+      "Bash(git init *)",
+      "Bash(git commit *)",
+      "Bash(git branch *)",
+      "Bash(git remote *)",
+      "Bash(git push *)"
+    ]
+  }
+}
