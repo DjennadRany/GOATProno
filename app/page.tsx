@@ -16,8 +16,8 @@ export default function HomePage() {
         <Image
           src="/GOATPromo_Logo.png"
           alt="GOATProno"
-          width={350}
-          height={350}
+          width={450}
+          height={450}
           className="object-contain drop-shadow-2xl"
           priority
           unoptimized
