@@ -105,11 +105,15 @@ export default function FieldView({ teamName, players }: FieldViewProps) {
         </svg>
 
         {/* Joueurs */}
-        {playerPositions.map((item, idx) => (
+        {playerPositions.map((item, idx) => {
+          // clamp positions to keep players inside the visible pitch
+          const clampedX = Math.min(95, Math.max(5, item.x))
+          const clampedY = Math.min(92, Math.max(6, item.y))
+          return (
           <div
             key={`${item.player.id}-${idx}`}
             className="absolute flex flex-col items-center -translate-x-1/2 -translate-y-1/2"
-            style={{ left: `${item.x}%`, top: `${item.y}%`, zIndex: 10 + idx }}
+            style={{ left: `${clampedX}%`, top: `${clampedY}%`, zIndex: 10 + idx }}
           >
             {/* Jersey avec numéro */}
             <div className="relative w-12 h-12 rounded-full bg-gradient-to-b from-blue-500 to-blue-600 border-2 border-white shadow-lg flex items-center justify-center text-white font-bold text-sm">
@@ -122,7 +126,8 @@ export default function FieldView({ teamName, players }: FieldViewProps) {
               </p>
             </div>
           </div>
-        ))}
+          )
+        })}
       </div>
 
       {/* Légende */}
