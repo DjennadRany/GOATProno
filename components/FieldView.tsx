@@ -1,13 +1,12 @@
 "use client"
 
-import Image from "next/image"
+import PlayerPhoto from "@/components/PlayerPhoto"
 
 interface Player {
   id: number
   name: string
   position: string
-  shirt: number
-  crest?: string
+  shirt: number | null
 }
 
 interface FieldViewProps {
@@ -70,13 +69,13 @@ export default function FieldView({ teamName, players }: FieldViewProps) {
     ...playersByPosition.FWD,
   ]
 
-  positions.forEach((row) => {
-    row.cols.forEach((col) => {
+  positions.forEach((formationRow) => {
+    formationRow.cols.forEach((col) => {
       if (playerIndex < allPlayers.length) {
         playerPositions.push({
           player: allPlayers[playerIndex],
           x: col,
-          y: row,
+          y: formationRow.row,
         })
         playerIndex++
       }
@@ -93,7 +92,7 @@ export default function FieldView({ teamName, players }: FieldViewProps) {
         {/* Lignes du terrain */}
         <svg className="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg">
           {/* Ligne médiane */}
-          <line x1="50%" y1="0" x2="50%" y2="100%" stroke="white" strokeWidth="2" opacity="0.4" />
+          <line x1="0" y1="50%" x2="100%" y2="50%" stroke="white" strokeWidth="2" opacity="0.4" />
           {/* Cercle du centre */}
           <circle cx="50%" cy="50%" r="12%" stroke="white" strokeWidth="1.5" fill="none" opacity="0.3" />
           {/* Zones de but */}
@@ -115,9 +114,18 @@ export default function FieldView({ teamName, players }: FieldViewProps) {
             className="absolute flex flex-col items-center -translate-x-1/2 -translate-y-1/2"
             style={{ left: `${clampedX}%`, top: `${clampedY}%`, zIndex: 10 + idx }}
           >
-            {/* Jersey avec numéro */}
-            <div className="relative w-12 h-12 rounded-full bg-gradient-to-b from-blue-500 to-blue-600 border-2 border-white shadow-lg flex items-center justify-center text-white font-bold text-sm">
-              {item.player.shirt}
+            {/* Photo + numéro */}
+            <div className="relative w-12 h-12">
+              <PlayerPhoto
+                playerName={item.player.name}
+                size={48}
+                className="border-2 border-white shadow-lg"
+              />
+              {item.player.shirt != null && (
+                <span className="absolute -bottom-1 -right-1 bg-blue-600 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center border border-white">
+                  {item.player.shirt}
+                </span>
+              )}
             </div>
             {/* Nom court */}
             <div className="mt-1 text-center">
@@ -137,7 +145,7 @@ export default function FieldView({ teamName, players }: FieldViewProps) {
           <div className="space-y-0.5 text-slate-300 text-xs">
             {playersByPosition.DEF.slice(0, 4).map((p) => (
               <p key={p.id} className="truncate">
-                #{p.shirt} {p.name}
+                {p.shirt != null ? `#${p.shirt} ` : ""}{p.name}
               </p>
             ))}
           </div>
@@ -147,7 +155,7 @@ export default function FieldView({ teamName, players }: FieldViewProps) {
           <div className="space-y-0.5 text-slate-300 text-xs">
             {playersByPosition.MID.slice(0, 5).map((p) => (
               <p key={p.id} className="truncate">
-                #{p.shirt} {p.name}
+                {p.shirt != null ? `#${p.shirt} ` : ""}{p.name}
               </p>
             ))}
           </div>
@@ -157,7 +165,7 @@ export default function FieldView({ teamName, players }: FieldViewProps) {
           <div className="space-y-0.5 text-slate-300 text-xs">
             {playersByPosition.FWD.slice(0, 3).map((p) => (
               <p key={p.id} className="truncate">
-                #{p.shirt} {p.name}
+                {p.shirt != null ? `#${p.shirt} ` : ""}{p.name}
               </p>
             ))}
           </div>
@@ -167,7 +175,7 @@ export default function FieldView({ teamName, players }: FieldViewProps) {
           <div className="space-y-0.5 text-slate-300 text-xs">
             {playersByPosition.GK.map((p) => (
               <p key={p.id} className="truncate">
-                #{p.shirt} {p.name}
+                {p.shirt != null ? `#${p.shirt} ` : ""}{p.name}
               </p>
             ))}
           </div>
