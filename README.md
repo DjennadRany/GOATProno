@@ -43,4 +43,19 @@ npm test
 |----------|--------|
 | `FOOTBALL_DATA_TOKEN` | ta clé football-data.org |
 
-3. Déployer.
+3. **Important — réglages Build** (Settings → Build & Development Settings) :
+
+| Paramètre | Valeur |
+|-----------|--------|
+| Framework Preset | **Next.js** |
+| Build Command | `npm run build` (ou laisser vide = auto) |
+| Output Directory | **vide** (ne pas mettre `.next` ni `public`) |
+| Root Directory | vide (sauf si l'app est dans un sous-dossier) |
+
+4. Redéployer (**Deployments → … → Redeploy**).
+
+### Erreur 404 sur Vercel
+
+Si le build réussit mais le site affiche `404 NOT FOUND` (page blanche Vercel), ce n'est **pas** un problème de variables d'environnement — **garde `FOOTBALL_DATA_TOKEN`**.
+
+La cause est presque toujours **Output Directory** réglé sur `.next` (ancien `vercel.json`). Vercel sert alors des fichiers bruts au lieu de l'app Next.js. Vide ce champ, vérifie que le Framework est **Next.js**, puis redéploie.
